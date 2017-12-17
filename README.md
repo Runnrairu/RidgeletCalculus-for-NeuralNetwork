@@ -20,6 +20,6 @@
 
 　適当な条件のもとで、次の「再構成公式」が成り立つ。
 <img src="https://latex.codecogs.com/gif.latex?f(x)=\int_{\mathbb{Y}^{d+1}}(\mathcal{R}_\psi&space;f)(a.b)\eta(a\cdot&space;x-b)|a|^{-1}dadb />
-
+ 
 ## 参考文献
 [1]園田翔,深層ニューラルネットワークの積分表現理論(2017)
