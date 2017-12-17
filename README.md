@@ -11,11 +11,12 @@
 入力層-中間層については、後述のオラクルサンプリングを用いる。
 
 ## ニューラルネットワークの積分表現
-　パラメータ<img src="https://latex.codecogs.com/gif.latex?(a,b)&space;a\in\mathcal{R}^d,b\in\mathcal{R}" />がとる空間を<img src="https://latex.codecogs.com/gif.latex?\mathbb{Y}^{d+1}(=\mathbb{R}^{d+1})" />と表記する。
+　パラメータ<img src="https://latex.codecogs.com/gif.latex?(a,b)&space;a\in\mathbb{R}^d,b\in\mathbb{R}" />がとる空間を<img src="https://latex.codecogs.com/gif.latex?\mathbb{Y}^{d+1}(=\mathbb{R}^{d+1})" />と表記する。
 　関数<img src="https://latex.codecogs.com/gif.latex?f:\mathbb{R}^d\rightarrow\mathbb{C}" />の、関数<img src="https://latex.codecogs.com/gif.latex?\psi:\mathbb{R}\rightarrow\mathbb{C}" />によるリッジレット変換は次のように定義される。
  <img src="https://latex.codecogs.com/gif.latex?(\mathcal{R}_\psi&space;f)(a,b):=\int_{\mathbb{R}^d}f(x)\psi(a\cdot&space;x-b)|a|dx" />
 
-　次に、関数<img src="https://latex.codecogs.com/gif.latex?f:\mathbb{R}^d\rightarrow\mathbb{C}" />
+　次に、関数<img src="https://latex.codecogs.com/gif.latex?T:\mathbb{Y}^{d+1}\rightarrow\mathbb{C}" />の、関数<img src="https://latex.codecogs.com/gif.latex?\eta:\mathbb{R}\rightarrow\mathbb{C}" />による双対リッジレット変換を次のように定義する。
+<img src="https://latex.codecogs.com/gif.latex?(\mathcal{R}^*_\eta&space;T)(x):=\int_{\mathbb{Y}^{d+1}T(a.b)\eta(a\cdot&space;x-b)|a|^{-1}dadb" />
 
 ## 参考文献
 [1]園田翔,深層ニューラルネットワークの積分表現理論(2017)
