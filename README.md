@@ -12,7 +12,7 @@
 
 ## ニューラルネットワークの積分表現
 　関数<img src="https://latex.codecogs.com/gif.latex?f:\mathbb{R}^d\rightarrow\mathbb{C}" />の、関数<img src="https://latex.codecogs.com/gif.latex?\psi:\mathbb{R}\rightarrow\mathbb{C}" />によるリッジレット変換は次のように定義される。
- <img src="https://latex.codecogs.com/gif.latex?f:(\mathcal{R}_\psi&space;f)(a,b):=\int_{\mathbb{R}^d}f(x)\psi(a\cdot&space;x-b)|a|dx" />
+ <img src="https://latex.codecogs.com/gif.latex?(\mathcal{R}_\psi&space;f)(a,b):=\int_{\mathbb{R}^d}f(x)\psi(a\cdot&space;x-b)|a|dx" />
 
 
 ## 参考文献
