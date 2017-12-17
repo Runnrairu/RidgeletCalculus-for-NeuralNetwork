@@ -19,7 +19,14 @@
 <img src="https://latex.codecogs.com/gif.latex?(\mathcal{R}^*_\eta&space;T)(x):=\int_{\mathbb{Y}^{d+1}}T(a.b)\eta(a\cdot&space;x-b)|a|^{-1}dadb" />
 
 　適当な条件のもとで、次の「再構成公式」が成り立つ。
-<img src="https://latex.codecogs.com/gif.latex?f(x)=\int_{\mathbb{Y}^{d+1}}(\mathcal{R}_\psi&space;f)(a.b)\eta(a\cdot&space;x-b)|a|^{-1}dadb" />
+<img src="https://latex.codecogs.com/gif.latex?f(x)=\int_{\mathbb{Y}^{d+1}}(\mathcal{R}_\psi&space;f)(a,b)\eta(a\cdot&space;x-b)|a|^{-1}dadb" />
+
+　これを「ニューラルネットワークの積分表現」といい、中間層のノード数を無限大に増やした場合のニューラルネットワークは、そのパラメータを解析的に決定できることを示している。
+　実際のニューラルネットワークは中間層のノード数が有限になるが、この積分表現の離散化を用いると、答えの近くから始めるわけなので通常の正規分布からのサンプリングで初期値を決めるよりも圧倒的に早く収束させることができ、局所解にハマるリスクもかなり小さくなる。
+
+## オラクルサンプリングとリッジレット変換の近似
+
+
  
 ## 参考文献
 [1]園田翔,深層ニューラルネットワークの積分表現理論(2017)
