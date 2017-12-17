@@ -11,7 +11,7 @@
 入力層-中間層については、後述のオラクルサンプリングを用いる。
 
 ## ニューラルネットワークの積分表現
-
+　関数<img src="https://latex.codecogs.com/gif.latex?f:\mathbb{R}^d\rightarrow\mathbb{C}" />の、関数<img src="https://latex.codecogs.com/gif.latex?\psi:\mathbb{R}\rightarrow\mathbb{C}" />によるリッジレット変換<img src="https://latex.codecogs.com/gif.latex?\mathcal{R}_\psi&space;f" />は次のように定義される。
 
 
 
