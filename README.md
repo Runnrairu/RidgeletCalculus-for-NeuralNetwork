@@ -34,7 +34,7 @@
 入力層が低次元なら棄却法で直接これをサンプリングすればいいが、高次元になると値の信頼性がかなり落ちてくるため、単純な測度で近似してサンプリングを行う。詳細なアルゴリズムは[1]の7章を参照。
 
 x_sとy_s:=f(x_s)が紐づけられたS個のデータがあったとする。リッジレット変換は次のように近似できる。
-<img src="https://latex.codecogs.com/gif.latex?(\mathcal{R}_\psi&space;f)(a,b)\approx\Sigma^S_{s=1}y_s\psi(a\cdot&space;x_s-b) " />
+<img src="https://latex.codecogs.com/gif.latex?(\mathcal{R}_\psi&space;f)(a,b)\approx\Sigma^S_{s=1}y_s\psi(a\cdot&space;x_s-b)" />
 
 
 ## 注釈
