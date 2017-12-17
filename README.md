@@ -11,22 +11,28 @@
 入力層-中間層については、後述のオラクルサンプリングを用いる。
 
 ## ニューラルネットワークの積分表現
-　パラメータ<img src="https://latex.codecogs.com/gif.latex?(a,b)&space;a\in\mathbb{R}^d,b\in\mathbb{R}" />がとる空間を<img src="https://latex.codecogs.com/gif.latex?\mathbb{Y}^{d+1}(=\mathbb{R}^{d+1})" />と表記する。
-　関数<img src="https://latex.codecogs.com/gif.latex?f:\mathbb{R}^d\rightarrow\mathbb{C}" />の、関数<img src="https://latex.codecogs.com/gif.latex?\psi:\mathbb{R}\rightarrow\mathbb{C}" />によるリッジレット変換は次のように定義される。
+　入力層から中間層への重みづけパラメータ<img src="https://latex.codecogs.com/gif.latex?(a,b)&space;a\in\mathbb{R}^d,b\in\mathbb{R}" />がとる空間を<img src="https://latex.codecogs.com/gif.latex?\mathbb{Y}^{d+1}(=\mathbb{R}^{d+1})" />と表記する。
+　関数<img src="https://latex.codecogs.com/gif.latex?f:\mathbb{R}^d\rightarrow\mathbb{C}" />の、リッジレット関数<img src="https://latex.codecogs.com/gif.latex?\psi:\mathbb{R}\rightarrow\mathbb{C}" />によるリッジレット変換は次のように定義される。
  <img src="https://latex.codecogs.com/gif.latex?(\mathcal{R}_\psi&space;f)(a,b):=\int_{\mathbb{R}^d}f(x)\psi(a\cdot&space;x-b)|a|dx" />
 
-　次に、関数<img src="https://latex.codecogs.com/gif.latex?T:\mathbb{Y}^{d+1}\rightarrow\mathbb{C}" />の、関数<img src="https://latex.codecogs.com/gif.latex?\eta:\mathbb{R}\rightarrow\mathbb{C}" />による双対リッジレット変換を次のように定義する。
+　次に、関数<img src="https://latex.codecogs.com/gif.latex?T:\mathbb{Y}^{d+1}\rightarrow\mathbb{C}" />の、活性化関数<img src="https://latex.codecogs.com/gif.latex?\eta:\mathbb{R}\rightarrow\mathbb{C}" />による双対リッジレット変換を次のように定義する。
 <img src="https://latex.codecogs.com/gif.latex?(\mathcal{R}^*_\eta&space;T)(x):=\int_{\mathbb{Y}^{d+1}}T(a.b)\eta(a\cdot&space;x-b)|a|^{-1}dadb" />
 
 　適当な条件のもとで、次の「再構成公式」が成り立つ。
 <img src="https://latex.codecogs.com/gif.latex?f(x)=\int_{\mathbb{Y}^{d+1}}(\mathcal{R}_\psi&space;f)(a,b)\eta(a\cdot&space;x-b)dadb" />
 
 　これを「ニューラルネットワークの積分表現」といい、中間層のノード数を無限大に増やした場合のニューラルネットワークは、そのパラメータを解析的に決定できることを示している。
-　実際のニューラルネットワークは中間層のノード数が有限になるが、この積分表現の離散化を用いると、答えの近くから始めるわけなので通常の正規分布からのサンプリングで初期値を決めるよりも圧倒的に早く収束させることができ、局所解にハマるリスクもかなり小さくなる。
+　実際のニューラルネットワークは中間層のノード数が有限になるが、この積分表現の離散化をパラメータの初期値に用いると、最初から答えの近くから始めることになる。なので通常の正規分布からのサンプリングで初期値を決めるよりも圧倒的に早く収束させることができ、勾配法でも局所解にハマるリスクがかなり小さい。
+　再構成公式が成り立つための「ニューラルネットで近似したい関数」と「リッジレット関数」と「活性化関数」の条件については[1]を参照のこと。これらの条件は全て関数解析の言葉で書ける。
 
 ## オラクルサンプリングとリッジレット変換の近似
+　
 
 
- 
+## 注釈
+　実際にリッジレット解析を用いて実装されたニューラルネットワークについては後日アップロード予定。
+　現時点では通常の正規分布からのサンプリングで実装している。
+
+
 ## 参考文献
 [1]園田翔,深層ニューラルネットワークの積分表現理論(2017)
