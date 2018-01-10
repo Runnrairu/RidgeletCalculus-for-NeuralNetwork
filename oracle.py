@@ -1,6 +1,9 @@
+#事前学習
 import numpy as np
 import tensorflow as tf
 import pandas as pd
+from sklearn import linear_model
+
 def orijinal_adjustment(raw_input,x):#データの加工。組みなおすときにはpandas.Dataframeを使いたい
     long_input=raw_input.shape[0]
     if x==1:
@@ -156,39 +159,80 @@ def orijinal_adjustment(raw_input,x):#データの加工。組みなおすとき
     raw_input=np.delete(raw_input,0,1)
     return raw_input
 
-def w_sample():#独自の工夫その２．混合比サンプリング
-    
-    
+def w_sample():#独特な工夫その２．混合比サンプリング
+    w = np.random.rand()
+    sum_y_j = 0
+    for j in range(data_size):
+        sum_y_j += np.absolute(price_train[j][0])
+        if w < sum_y_j/y_sum:
+            break
+    return j
     
     
 
-def oracle_sampling():#独自の工夫その１。オラクルサンプリング。これを隠れユニット数繰り返す
-    a_b_list=[]
-    s=w_sample()
-    t=w_sample()
-    xi=np.random.beta(100,3)
-    gamma=np.random.binomial(1,0.5)
-    z=xi*np.power(-1,gamma)
-    a_inv=norm(condition_train[s]-condition_train[t])
-    norm_s=norm(condition_train[s])
-    for i in range(CONDITION_SIZE):
-        a_b_list.append(condition_train[s][i]/(a_inv*norm_s)
-    a_b_list.append（tf.matmul((a_b_list,condition_train[s])-z）
+def oracle_sampling():#独特な工夫その１。オラクルサンプリング。
+    a_b_list=[[0 for i in range(CONDITION_SIZE+1)] for j in range(HIDDEN_UNIT_SIZE)]
+    
+    for j in range(HIDDEN_UNIT_SIZE):
+        s=w_sample()
+        t=w_sample()
+        xi=np.random.beta(100,3)
+        gamma=np.random.binomial(1,0.5)
+        z=xi*np.power(-1,gamma)
+        a_inv=norm(condition_train[s]-condition_train[t])
+        norm_s=norm(condition_train[s])
+        nor_sum=0 #内積の保存
+        for i in range(CONDITION_SIZE):
+            a_b_list[j][i] = condition_train[s][i]/(a_inv*norm_s)
+            nor_sum +=  a_b_list[j][i]*condition_train[s][i]
+            a_b_list[j][CONDITION_SIZE] = nor_sum-z
     return a_b_list
 
 
+def norm(list):
+    norm_sum = 0
+    for i in range(list.shape[0]):
+        norm_sum += np.power(list[i],2)
+    return np.power(norm_sum,0.5)
+     
+def red_L1():#リッジレット変換後のL1ノルムを近似計算する
+    
+    
 
 
-w=[]
 HIDDEN_UNIT_SIZE =10
 TRAIN_DATA_SIZE = 1000
+
 raw_input = np.loadtxt(open(r"train.csv"), delimiter=",",skiprows=1,dtype=str)
 raw_input=orijinal_adjustment(raw_input,1)
+raw_input=raw_input.astype(np.float64)
 CONDITION_SIZE = raw_input.shape[1]-1
 [condition,price]  = np.hsplit(raw_input, [CONDITION_SIZE])
 [condition_train,condition_test]=np.vsplit(condition,[TRAIN_DATA_SIZE])
 [price_train,price_test]=np.vsplit(price,[TRAIN_DATA_SIZE])
-sum=0
-for i in range(CONDITION_SIZE):
-    
+data_size = price_train.shape[0]
+y_sum=0
 
+for i in range(data_size):
+    y_sum += np.absolute(float(price_train[i][0]))
+
+
+para = oracle_sampling() #オラクルサンプリングを行う
+[a,b] = np.hsplit(np.array(para), [CONDITION_SIZE])#重みとバイアスに分ける
+#実はこの段階で入力層→中間層の学習はほぼ完了している。微妙な近似誤差をtrainingで修正する
+#中間層→出力層は線形回帰で近似する
+
+
+c=clf.coef_ 
+d=clf.intercept_
+
+with tf.Graph().as_default():   
+    init = tf.global_variables_initializer()
+    hidden1_weight = tf.Variable(a, name="hidden1_weight")
+    hidden1_bias = tf.Variable(b, name="hidden1_bias")
+    output_weight = tf.Variable(c, name="output_weight")
+    output_bias = tf.Variable(d, name="output_bias")
+    saver = tf.train.Saver()
+    with tf.Session() as sess:
+        sess.run(init)
+        saver.save(sess,"../model.ckpt")
