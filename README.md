@@ -38,7 +38,7 @@
 ### リッジレット変換の近似
 　リッジレット変換は、次のようにモンテカルロ積分で近似する。  
  <img src="https://latex.codecogs.com/gif.latex?(\mathcal{R}_\psi&space;f)(a,b):=\frac{1}{nZ}\Sigma^n_{i=1}y_i\psi(a\cdot&space;x-b)" />  
-ただし<img src="https://latex.codecogs.com/gif.latex?Z:=K_{\psi,\eta}\int_{\mathbb{Y}^{d+1}}|(\mathcal{R}_\psi&space;f)(a,b)|dadb" />は正規化定数と核の積で、その値を具体的に計算するのは困難である。そのため、Zは学習の序盤にフィッティングにより求める。
+ただし<img src="https://latex.codecogs.com/gif.latex?Z:=K_{\psi,\eta}\int_{\mathbb{Y}^{d+1}}|(\mathcal{R}_\psi&space;f)(a,b)|dadb" />は正規化定数と核の積で、その値を具体的に計算するのは困難である。そのため、Zは学習の序盤にフィッティングにより求める。（[1]では線形回帰で求めていたが、ただでさえ過学習しやすい手法であるため、比率だけは保持してやや大雑把に動かしたい）
 
 ## 今後予定している改善点
 　積分表現理論は非常に強力な手法だが、やや過学習しやすいという欠点がある。そのため、ベイジアンであればよりこの強力さを十全に活かせると考えられる。
