@@ -16,7 +16,7 @@ def inference_oracle(condition_placeholder,keep_prob):#リッジレットにお�
     hidden1_output = tf.nn.relu(tf.matmul(condition_placeholder, hidden1_oracle_weight) + hidden1_oracle_bias)
     hidden1_output = tf.nn.dropout(hidden1_output,keep_prob)
   with tf.name_scope("output_oracle") as scope:#中間層→出力層の計算を行う
-    output = Z*tf.matmul(hidden1_output, tf.transpose(output_oracle_weight)) + output_oracle_bias
+    output = tf.matmul(hidden1_output, tf.transpose(output_oracle_weight)) + output_oracle_bias
     output = tf.nn.dropout(output,keep_prob)
   return tf.nn.l2_normalize(output, 0)#正規化
 
@@ -45,10 +45,6 @@ def training_oracle(loss_oracle):#リッジレット解析における本番の�
   return train_step
 
 
-def training_pre(loss_oracle):#事前学習。Zの調整
-  with tf.name_scope("training_pre") as scope:
-    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss_oracle,var_list = [Z])
-  return train_step
 
 def w_sample():#独特な工夫その２．混合比サンプリング
     w = np.random.rand()
@@ -67,6 +63,10 @@ def oracle_sampling():#独特な工夫その１。オラクルサンプリング
     for j in range(HIDDEN_UNIT_SIZE):
         s=w_sample()
         t=w_sample()
+        if s==t:#もし番号がかぶったら選びなおし
+            t=w_sample()
+            if s==t:
+                t=w_sample()
         xi=np.random.beta(100,3)
         gamma=np.random.binomial(1,0.5)
         z=xi*np.power(-1,gamma)
@@ -79,7 +79,7 @@ def oracle_sampling():#独特な工夫その１。オラクルサンプリング
             a_b_list[j][CONDITION_SIZE] = nor_sum-z
     return a_b_list
 
-def norm(normar):
+def norm(normar):#L2ノルムを計算する
     norm_sum = 0
     for i in range(normar.shape[0]):
         norm_sum += np.power(normar[i],2)
@@ -92,14 +92,14 @@ def ridgelet_func(x):#リッジレット関数の計算
 
 def ridgelet(a,b,label_train,i):#リッジレット変換の近似
     ri_sum = 0
-    for j in range(CONDITION_SIZE):
-        ri_sum += ridgelet_func(np.dot(a[j],condition_train[i][j])-b)
+    for j in range(TRAIN_DATA_SIZE):
+        ri_sum += ridgelet_func(np.dot(a,condition_train[j])-b)
     return ri_sum[0]/TRAIN_DATA_SIZE
 
 
 
 #ノード数の設定と訓練データの個数設定
-HIDDEN_UNIT_SIZE =100
+HIDDEN_UNIT_SIZE =10000
 TRAIN_DATA_SIZE = 1000
  #混合比サンプリングに用いる変数
 #ファイルの読み込み
@@ -167,14 +167,12 @@ with tf.Graph().as_default():
   hidden1_oracle_weight = tf.Variable(a.T, name="hidden1_oracle_weight",dtype=tf.float32)#
   hidden1_oracle_bias = tf.Variable(b.T, name="hidden1_oracle_bias",dtype=tf.float32)
   output_oracle_weight = tf.Variable([c], name="output_oracle_weight",dtype=tf.float32)
-  output_oracle_bias = tf.Variable(tf.constant(0.01, shape=[1]), name="output_oracle_bias",dtype=tf.float32)
-  Z = tf.Variable(1.0, name="Z") #重要なポイント。リッジレット変換に伴う定数倍のフィッティング
+  output_oracle_bias = tf.Variable(tf.constant(0.0, shape=[1]), name="output_oracle_bias",dtype=tf.float32)
   #設定
   output = inference(condition_placeholder,keep_prob)
   output_oracle = inference_oracle(condition_placeholder,keep_prob)
   loss = loss(output, label_placeholder)
   loss_oracle = loss_oracle(output_oracle, label_placeholder)
-  pretraining = training_pre(loss_oracle)
   training_op = training(loss)
   training_rid = training_oracle(loss_oracle)
   summary_op = tf.summary.merge_all()
@@ -182,7 +180,7 @@ with tf.Graph().as_default():
   with tf.Session() as sess:
       summary_writer = tf.summary.FileWriter('data',graph=sess.graph )
       sess.run(init)
-
+      #普通の学習
       for step in range(1000):
           sess.run(training_op, feed_dict=feed_dict_train)
           loss_test = sess.run(loss, feed_dict=feed_dict_test)
@@ -196,8 +194,7 @@ with tf.Graph().as_default():
               print(loss_train)       
       print(sess.run(loss, feed_dict=feed_dict_test))
       print("ここからリッジレット解析を利用した場合")
-      for step in range(10):
-          sess.run(pretraining, feed_dict=feed_dict_oracle_train)
+      #リッジレット解析を用いた場合
       for step in range(1000):
           sess.run(training_rid, feed_dict=feed_dict_oracle_train)
           loss_test = sess.run(loss_oracle, feed_dict=feed_dict_oracle_test)
@@ -220,4 +217,3 @@ plt.title("loss")
 plt.xlabel("step")
 plt.ylabel("L^2-loss")
 plt.show()
-      
