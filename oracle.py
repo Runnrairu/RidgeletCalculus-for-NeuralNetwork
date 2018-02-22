@@ -5,19 +5,19 @@ import matplotlib.pyplot as plt
 def inference(condition_placeholder,keep_prob):#普通の学習におけるニューラルネットの計算
   with tf.name_scope("hidden1") as scope:#入力層→中間層の計算を行う
     hidden1_output = tf.nn.relu(tf.matmul(condition_placeholder, hidden1_weight) + hidden1_bias)
-    hid1_output = tf.nn.dropout(hidden1_output,keep_prob)
+    
   with tf.name_scope("output") as scope:#中間層→出力層の計算を行う
     output = tf.matmul(hidden1_output, output_weight) + output_bias
-    drop_output = tf.nn.dropout(output,keep_prob)
+    
   return tf.nn.l2_normalize(output, 0)#正規化
 
 def inference_oracle(condition_placeholder,keep_prob):#リッジレットにおけるニューラルネットの計算
   with tf.name_scope("hidden1_oracle") as scope:#入力層→中間層の計算を行う
     hidden1_output = tf.nn.relu(tf.matmul(condition_placeholder, hidden1_oracle_weight) + hidden1_oracle_bias)
-    hidden1_output = tf.nn.dropout(hidden1_output,keep_prob)
+    
   with tf.name_scope("output_oracle") as scope:#中間層→出力層の計算を行う
-    output = Z*tf.matmul(hidden1_output, output_oracle_weight) + output_oracle_bias
-    drop_output = tf.nn.dropout(output,keep_prob)
+    output = Z*tf.matmul(hidden1_output, tf.transpose(output_oracle_weight)) + output_oracle_bias
+  
   return tf.nn.l2_normalize(output, 0)#正規化
 
 
@@ -46,7 +46,7 @@ def training_oracle(loss_oracle):#リッジレット解析における本番の�
 
 
 def training_pre(loss_oracle):#事前学習。Zの調整
-  with tf.name_scope("training") as scope:
+  with tf.name_scope("training_pre") as scope:
     train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss_oracle,var_list = [Z])
   return train_step
 
@@ -79,10 +79,10 @@ def oracle_sampling():#独特な工夫その１。オラクルサンプリング
             a_b_list[j][CONDITION_SIZE] = nor_sum-z
     return a_b_list
 
-def norm(list):
+def norm(normar):
     norm_sum = 0
-    for i in range(list.shape[0]):
-        norm_sum += np.power(list[i],2)
+    for i in range(normar.shape[0]):
+        norm_sum += np.power(normar[i],2)
     return np.power(norm_sum,0.5)
 
 def ridgelet_func(x):#リッジレット関数の計算
@@ -94,12 +94,12 @@ def ridgelet(a,b,label_train,i):#リッジレット変換の近似
     ri_sum = 0
     for j in range(CONDITION_SIZE):
         ri_sum += ridgelet_func(np.dot(a[j],condition_train[i][j])-b)
-    return ri_sum/TRAIN_DATA_SIZE
+    return ri_sum[0]/TRAIN_DATA_SIZE
 
 
 
 #ノード数の設定と訓練データの個数設定
-HIDDEN_UNIT_SIZE =100
+HIDDEN_UNIT_SIZE =1000
 TRAIN_DATA_SIZE = 1000
  #混合比サンプリングに用いる変数
 #ファイルの読み込み
@@ -166,9 +166,9 @@ with tf.Graph().as_default():
   #リッジレット解析を用いた学習に用いる変数
   hidden1_oracle_weight = tf.Variable(a.T, name="hidden1_oracle_weight",dtype=tf.float32)#
   hidden1_oracle_bias = tf.Variable(b.T, name="hidden1_oracle_bias",dtype=tf.float32)
-  output_oracle_weight = tf.Variable(c, name="output_oracle_weight",dtype=tf.float32)
+  output_oracle_weight = tf.Variable([c], name="output_oracle_weight",dtype=tf.float32)
   output_oracle_bias = tf.Variable(tf.constant(0.01, shape=[1]), name="output_oracle_bias",dtype=tf.float32)
-  Z = tf.Variable(1.0, name="Z") #重要なポイント。リッジレット変換に伴う定数倍のフィッティング
+  Z = tf.Variable(0.01, name="Z") #重要なポイント。リッジレット変換に伴う定数倍のフィッティング
   #設定
   output = inference(condition_placeholder,keep_prob)
   output_oracle = inference_oracle(condition_placeholder,keep_prob)
@@ -179,7 +179,6 @@ with tf.Graph().as_default():
   training_rid = training_oracle(loss_oracle)
   summary_op = tf.summary.merge_all()
   init = tf.global_variables_initializer()
-
   with tf.Session() as sess:
       summary_writer = tf.summary.FileWriter('data',graph=sess.graph )
       sess.run(init)
@@ -197,8 +196,8 @@ with tf.Graph().as_default():
               print(loss_train)       
       print(sess.run(loss, feed_dict=feed_dict_test))
       print("ここからリッジレット解析を利用した場合")
-      for step in range(10):
-          sess.run(pretraining, feed_dict=feed_dict_oracle_train)
+      #for step in range(10):
+      #    sess.run(pretraining, feed_dict=feed_dict_oracle_train)
       for step in range(1000):
           sess.run(training_rid, feed_dict=feed_dict_oracle_train)
           loss_test = sess.run(loss_oracle, feed_dict=feed_dict_oracle_test)
@@ -206,7 +205,7 @@ with tf.Graph().as_default():
           losstrain_oracle.append(loss_train)
           losstest_oracle.append(loss_test)
           if step % 100==0:
-              summary_str = sess.run(summary_op, feed_dict_oracle_test)
+              summary_str = sess.run(summary_op, feed_dict=feed_dict_oracle_test)
               summary_str += sess.run(summary_op, feed_dict=feed_dict_oracle_train)
               summary_writer.add_summary(summary_str, step)
               print(loss_train)       
