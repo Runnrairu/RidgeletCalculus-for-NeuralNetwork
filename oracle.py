@@ -122,9 +122,8 @@ for i in range(data_size):
 para = oracle_sampling() #オラクルサンプリングを行う
 [a,b] = np.hsplit(np.array(para), [CONDITION_SIZE])#重みとバイアスに分ける
 
-for i in range(CONDITION_SIZE):
-    c.append(ridgelet(a[i],b[i],label_train,i)[0])#リッジレット変換の近似を計算する（定数倍は無視）
-
+for i in range(HIDDEN_UNIT_SIZE):
+    c.append(ridgelet(a[i],b[i],label_train,i))#リッジレット変換の近似を計算する（定数倍は無視）
 
 
 
@@ -177,8 +176,6 @@ with tf.Graph().as_default():
   loss_oracle = loss_oracle(output_oracle, label_placeholder)
   pretraining = training_pre(loss_oracle)
   training_op = training(loss)
-  
-  
   training_rid = training_oracle(loss_oracle)
   summary_op = tf.summary.merge_all()
   init = tf.global_variables_initializer()
