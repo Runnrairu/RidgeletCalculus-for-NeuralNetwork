@@ -1,169 +1,60 @@
-#事前学習
 import numpy as np
 import tensorflow as tf
-import pandas as pd
-from sklearn import linear_model
+import matplotlib.pyplot as plt
 
-def orijinal_adjustment(raw_input,x):#データの加工。組みなおすときにはpandas.Dataframeを使いたい
-    long_input=raw_input.shape[0]
-    if x==1:
-        for i in range(long_input):
-            raw_input[i][80]=float(raw_input[i][80])
-    for i in range(long_input):
-        if raw_input[i][79]=="normal":
-            raw_input[i][79]=1.0
-        elif raw_input[i][79]=="partial":
-            raw_input[i][79]=2.0
-        else:
-            raw_input[i][79]=0.0
-    for i in range(long_input):
-        if raw_input[i][78]=="New":
-            raw_input[i][78]=1.0
-        else :
-            raw_input[i][78]=0.0
-    for i in range(long_input):
-        raw_input[i][77]=2011-float(raw_input[i][77])
-    raw_input=np.delete(raw_input,76,1)
-    for i in range(long_input):
-        raw_input[i][75]=float(raw_input[i][75])
-    raw_input=np.delete(raw_input,74,1)
-    raw_input=np.delete(raw_input,73,1)
-    raw_input=np.delete(raw_input,72,1) #poolQC
-    for i in range(long_input):
-        raw_input[i][71]=float(raw_input[i][71])
-        raw_input[i][70]=float(raw_input[i][70])
-        raw_input[i][69]=float(raw_input[i][69])
-        raw_input[i][68]=float(raw_input[i][68])
-        raw_input[i][67]=float(raw_input[i][67])
-        raw_input[i][66]=float(raw_input[i][66])
-    raw_input=np.delete(raw_input,65,1)#paved drive
-    for i in range(long_input):
-        if raw_input[i][64]=="TA":
-            raw_input[i][64]=0.0
-        elif raw_input[i][64]=="Gd":
-            raw_input[i][64]=1.0
-        else:
-            raw_input[i][64]=-1.0
-        if raw_input[i][63]=="TA":
-            raw_input[i][63]=0.0
-        elif raw_input[i][63]=="Gd":
-            raw_input[i][63]=1.0
-        else:
-            raw_input[i][63]=-1.0
-    for i in range(long_input):
-        if raw_input[i][62]=="NA":
-            raw_input[i][62]=0.0
-        else:
-            raw_input[i][62]=float(raw_input[i][62])
-        if raw_input[i][61]=="NA":
-            raw_input[i][61]=0
-        else:
-            raw_input[i][61]=float(raw_input[i][61])
-    raw_input=np.delete(raw_input,60,1)#garagefinish
-    for i in range(long_input):
-        if raw_input[i][59]=="NA":
-            raw_input[i][59]=0.0
-        else:
-            raw_input[i][59]=2010-float(raw_input[i][59])
-    raw_input=np.delete(raw_input,58,1)
-    raw_input=np.delete(raw_input,57,1)#fireplaceQu
-    for i in range(long_input):
-        raw_input[i][56]=float(raw_input[i][56])
-    raw_input=np.delete(raw_input,55,1)
-    for i in range(long_input):
-        raw_input[i][54]=float(raw_input[i][54])
-    raw_input=np.delete(raw_input,53,1)
-    for i in range(long_input):
-        raw_input[i][52]=float(raw_input[i][52])#kitchnAbvGr
-        raw_input[i][51]=float(raw_input[i][51])
-        raw_input[i][50]=float(raw_input[i][50])
-        raw_input[i][49]=float(raw_input[i][49])
-        if raw_input[i][48]=="NA":
-            raw_input[i][48]=0.0
-        else:
-            raw_input[i][48]=float(raw_input[i][48])
-        if raw_input[i][47]=="NA":
-            raw_input[i][47]=0.0
-        else:
-            raw_input[i][47]=float(raw_input[i][47])
-        raw_input[i][46]=float(raw_input[i][46])
-        raw_input[i][45]=float(raw_input[i][45])
-        raw_input[i][44]=float(raw_input[i][44])
-        raw_input[i][43]=float(raw_input[i][43])#1stFlrSF
-    raw_input=np.delete(raw_input,42,1)
-    raw_input=np.delete(raw_input,41,1)
-    raw_input=np.delete(raw_input,40,1)
-    raw_input=np.delete(raw_input,39,1)
-    for i in range(long_input):
-        if raw_input[i][38]=="NA":
-            raw_input[i][38]=0.0
-        else:
-            raw_input[i][38]=float(raw_input[i][38])
-        if raw_input[i][37]=="NA":
-            raw_input[i][37]=0.0
-        else:
-            raw_input[i][37]=float(raw_input[i][37])
-        if raw_input[i][36]=="NA":
-            raw_input[i][36]=0.0
-        else:
-            raw_input[i][36]=float(raw_input[i][36])
-    raw_input=np.delete(raw_input,35,1)#BsmtFinType2
-    for i in range(long_input):
-        if raw_input[i][34]=="NA":
-            raw_input[i][34]=0.0
-        else:
-            raw_input[i][34]=float(raw_input[i][34])
-    raw_input=np.delete(raw_input,33,1)
-    raw_input=np.delete(raw_input,32,1)
-    raw_input=np.delete(raw_input,31,1)
-    raw_input=np.delete(raw_input,30,1)
-    raw_input=np.delete(raw_input,29,1)
-    raw_input=np.delete(raw_input,28,1)
-    raw_input=np.delete(raw_input,27,1)
-    for i in range(long_input):
-        if raw_input[i][26]=="NA":
-            raw_input[i][26]=0.0
-        else:
-            raw_input[i][26]=float(raw_input[i][26])
-    raw_input=np.delete(raw_input,25,1)
-    raw_input=np.delete(raw_input,24,1)
-    raw_input=np.delete(raw_input,23,1)
-    raw_input=np.delete(raw_input,22,1)
-    raw_input=np.delete(raw_input,21,1)#RoofStyle
-    for i in range(long_input):
-        raw_input[i][20]=2010-float(raw_input[i][20])
-        raw_input[i][19]=2010-float(raw_input[i][19])
-        raw_input[i][18]=float(raw_input[i][18])
-        raw_input[i][17]=float(raw_input[i][17])
-    raw_input=np.delete(raw_input,16,1)
-    raw_input=np.delete(raw_input,15,1)
-    raw_input=np.delete(raw_input,14,1)
-    raw_input=np.delete(raw_input,13,1)
-    raw_input=np.delete(raw_input,12,1)
-    raw_input=np.delete(raw_input,11,1)
-    raw_input=np.delete(raw_input,10,1)
-    raw_input=np.delete(raw_input,9,1)
-    raw_input=np.delete(raw_input,8,1)
-    raw_input=np.delete(raw_input,7,1)
-    raw_input=np.delete(raw_input,6,1)
-    raw_input=np.delete(raw_input,5,1)
-    for i in range(long_input):
-        raw_input[i][4]=float(raw_input[i][4])
-        if raw_input[i][3]=="NA":
-            raw_input[i][3]=0.0
-        else:
-            raw_input[i][3]=float(raw_input[i][3])
-    raw_input=np.delete(raw_input,2,1)
-    for i in range(long_input):
-        raw_input[i][1]=float(raw_input[i][1])
-    raw_input=np.delete(raw_input,0,1)
-    return raw_input
+def inference(condition_placeholder,keep_prob):#普通の学習におけるニューラルネットの計算
+  with tf.name_scope("hidden1") as scope:#入力層→中間層の計算を行う
+    hidden1_output = tf.nn.relu(tf.matmul(condition_placeholder, hidden1_weight) + hidden1_bias)
+    hid1_output = tf.nn.dropout(hidden1_output,keep_prob)
+  with tf.name_scope("output") as scope:#中間層→出力層の計算を行う
+    output = tf.matmul(hidden1_output, output_weight) + output_bias
+    drop_output = tf.nn.dropout(output,keep_prob)
+  return tf.nn.l2_normalize(output, 0)#正規化
+
+def inference_oracle(condition_placeholder,keep_prob):#リッジレットにおけるニューラルネットの計算
+  with tf.name_scope("hidden1_oracle") as scope:#入力層→中間層の計算を行う
+    hidden1_output = tf.nn.relu(tf.matmul(condition_placeholder, hidden1_oracle_weight) + hidden1_oracle_bias)
+    hidden1_output = tf.nn.dropout(hidden1_output,keep_prob)
+  with tf.name_scope("output_oracle") as scope:#中間層→出力層の計算を行う
+    output = Z*tf.matmul(hidden1_output, output_oracle_weight) + output_oracle_bias
+    drop_output = tf.nn.dropout(output,keep_prob)
+  return tf.nn.l2_normalize(output, 0)#正規化
+
+
+def loss(output, label_placeholder):
+  with tf.name_scope("loss") as scope:#正規化したうえで損失関数を計算する
+    loss = tf.nn.l2_loss(output - tf.nn.l2_normalize(label_placeholder, 0))
+    tf.summary.scalar("loss", loss)
+  return loss
+
+def loss_oracle(output_oracle, label_placeholder):
+  with tf.name_scope("loss_oracle") as scope:#正規化したうえで損失関数を計算する
+    loss = tf.nn.l2_loss(output_oracle - tf.nn.l2_normalize(label_placeholder, 0))
+    tf.summary.scalar("loss_oracle", loss)
+  return loss
+
+
+def training(loss):#本番の学習
+  with tf.name_scope("training") as scope:
+    train_step = tf.train.GradientDescentOptimizer(0.01).minimize(loss,var_list=[hidden1_weight,hidden1_bias,output_weight,output_bias])
+  return train_step
+
+def training_oracle(loss_oracle):#リッジレット解析における本番の学習
+  with tf.name_scope("training_oracle") as scope:
+    train_step = tf.train.GradientDescentOptimizer(0.01).minimize(loss_oracle,var_list=[hidden1_oracle_weight,hidden1_oracle_bias,output_oracle_weight,output_oracle_bias])
+  return train_step
+
+
+def training_pre(loss_oracle):#事前学習。Zの調整
+  with tf.name_scope("training") as scope:
+    train_step = tf.train.GradientDescentOptimizer(0.1).minimize(loss_oracle,var_list = [Z])
+  return train_step
 
 def w_sample():#独特な工夫その２．混合比サンプリング
     w = np.random.rand()
     sum_y_j = 0
     for j in range(data_size):
-        sum_y_j += np.absolute(price_train[j][0])
+        sum_y_j += np.absolute(label_train[j][0])
         if w < sum_y_j/y_sum:
             break
     return j
@@ -171,7 +62,7 @@ def w_sample():#独特な工夫その２．混合比サンプリング
     
 
 def oracle_sampling():#独特な工夫その１。オラクルサンプリング。
-    a_b_list=[[0 for i in range(CONDITION_SIZE+1)] for j in range(HIDDEN_UNIT_SIZE)]
+    a_b_list=[[None for i in range(CONDITION_SIZE+1)] for j in range(HIDDEN_UNIT_SIZE)]
     
     for j in range(HIDDEN_UNIT_SIZE):
         s=w_sample()
@@ -188,51 +79,149 @@ def oracle_sampling():#独特な工夫その１。オラクルサンプリング
             a_b_list[j][CONDITION_SIZE] = nor_sum-z
     return a_b_list
 
-
 def norm(list):
     norm_sum = 0
     for i in range(list.shape[0]):
         norm_sum += np.power(list[i],2)
     return np.power(norm_sum,0.5)
-     
-def red_L1():#リッジレット変換後のL1ノルムを近似計算する
-    
+
+def ridgelet_func(x):#リッジレット関数の計算
+    return (x*x-1)*np.exp(-x*x/2)
     
 
 
-HIDDEN_UNIT_SIZE =10
+def ridgelet(a,b,label_train,i):#リッジレット変換の近似
+    ri_sum = 0
+    for j in range(CONDITION_SIZE):
+        ri_sum += ridgelet_func(np.dot(a[j],condition_train[i][j])-b)
+    return ri_sum/TRAIN_DATA_SIZE
+
+
+
+#ノード数の設定と訓練データの個数設定
+HIDDEN_UNIT_SIZE =100
 TRAIN_DATA_SIZE = 1000
-
-raw_input = np.loadtxt(open(r"train.csv"), delimiter=",",skiprows=1,dtype=str)
-raw_input=orijinal_adjustment(raw_input,1)
-raw_input=raw_input.astype(np.float64)
+ #混合比サンプリングに用いる変数
+#ファイルの読み込み
+raw_input = np.loadtxt(open(r"train.csv"), delimiter=",",skiprows=1,dtype = 'float')
 CONDITION_SIZE = raw_input.shape[1]-1
-[condition,price]  = np.hsplit(raw_input, [CONDITION_SIZE])
+[condition,label]  = np.hsplit(raw_input, [CONDITION_SIZE])
 [condition_train,condition_test]=np.vsplit(condition,[TRAIN_DATA_SIZE])
-[price_train,price_test]=np.vsplit(price,[TRAIN_DATA_SIZE])
-data_size = price_train.shape[0]
+[label_train,label_test]=np.vsplit(label,[TRAIN_DATA_SIZE])
+#損失の記録
+losstrain = []
+losstest = []
+losstrain_oracle = []
+losstest_oracle = []
+data_size = label_train.shape[0]
 y_sum=0
-
+c=[]
 for i in range(data_size):
-    y_sum += np.absolute(float(price_train[i][0]))
-
+    y_sum += np.absolute(float(label_train[i][0]))
 
 para = oracle_sampling() #オラクルサンプリングを行う
 [a,b] = np.hsplit(np.array(para), [CONDITION_SIZE])#重みとバイアスに分ける
-#実はこの段階で入力層→中間層の学習はほぼ完了している。微妙な近似誤差をtrainingで修正する
-#中間層→出力層は線形回帰で近似する
+
+for i in range(CONDITION_SIZE):
+    c.append(ridgelet(a[i],b[i],label_train,i)[0])#リッジレット変換の近似を計算する（定数倍は無視）
 
 
-c=clf.coef_ 
-d=clf.intercept_
 
-with tf.Graph().as_default():   
-    init = tf.global_variables_initializer()
-    hidden1_weight = tf.Variable(a, name="hidden1_weight")
-    hidden1_bias = tf.Variable(b, name="hidden1_bias")
-    output_weight = tf.Variable(c, name="output_weight")
-    output_bias = tf.Variable(d, name="output_bias")
-    saver = tf.train.Saver()
-    with tf.Session() as sess:
-        sess.run(init)
-        saver.save(sess,"../model.ckpt")
+
+
+with tf.Graph().as_default():
+  condition_placeholder = tf.placeholder("float", [None, CONDITION_SIZE], name="condition_placeholder")
+  label_placeholder = tf.placeholder("float", [None, 1], name="label_placeholder")
+  loss_label_placeholder = tf.placeholder("string", name="loss_label_placeholder")
+  keep_prob = tf.placeholder("float")
+  feed_dict_train={
+    label_placeholder: label_train,
+    condition_placeholder: condition_train,
+    loss_label_placeholder: "loss__normal_train",
+    keep_prob : 0.5#ドロップアウト率の設定
+  }
+  feed_dict_test={
+    label_placeholder: label_test,
+    condition_placeholder: condition_test,
+    loss_label_placeholder: "loss_normal_test",
+    keep_prob : 1.0#ドロップアウト率の設定
+  }
+  feed_dict_oracle_train={#リッジレット解析を用いるほう
+    label_placeholder: label_train,
+    condition_placeholder: condition_train,
+    loss_label_placeholder: "loss__oracle_train",
+    keep_prob : 0.5#ドロップアウト率の設定
+  }
+  feed_dict_oracle_test={
+    label_placeholder:label_test,
+    condition_placeholder: condition_test,
+    loss_label_placeholder: "loss_oracle_test",
+    keep_prob : 1.0#ドロップアウト率の設定
+  }
+  
+  #普通の学習に用いる変数
+  hidden1_weight = tf.Variable(tf.truncated_normal([CONDITION_SIZE, HIDDEN_UNIT_SIZE], stddev=0.1), name="hidden1_weight")
+  hidden1_bias = tf.Variable(tf.constant(0.1, shape=[HIDDEN_UNIT_SIZE]), name="hidden1_bias")
+  output_weight = tf.Variable(tf.truncated_normal([HIDDEN_UNIT_SIZE, 1], stddev=0.1), name="output_weight")
+  output_bias = tf.Variable(tf.constant(0.1, shape=[1]), name="output_bias") 
+  #リッジレット解析を用いた学習に用いる変数
+  hidden1_oracle_weight = tf.Variable(a.T, name="hidden1_oracle_weight",dtype=tf.float32)#
+  hidden1_oracle_bias = tf.Variable(b.T, name="hidden1_oracle_bias",dtype=tf.float32)
+  output_oracle_weight = tf.Variable(c, name="output_oracle_weight",dtype=tf.float32)
+  output_oracle_bias = tf.Variable(tf.constant(0.01, shape=[1]), name="output_oracle_bias",dtype=tf.float32)
+  Z = tf.Variable(1.0, name="Z") #重要なポイント。リッジレット変換に伴う定数倍のフィッティング
+  #設定
+  output = inference(condition_placeholder,keep_prob)
+  output_oracle = inference_oracle(condition_placeholder,keep_prob)
+  loss = loss(output, label_placeholder)
+  loss_oracle = loss_oracle(output_oracle, label_placeholder)
+  pretraining = training_pre(loss_oracle)
+  training_op = training(loss)
+  
+  
+  training_rid = training_oracle(loss_oracle)
+  summary_op = tf.summary.merge_all()
+  init = tf.global_variables_initializer()
+
+  with tf.Session() as sess:
+      summary_writer = tf.summary.FileWriter('data',graph=sess.graph )
+      sess.run(init)
+
+      for step in range(1000):
+          sess.run(training_op, feed_dict=feed_dict_train)
+          loss_test = sess.run(loss, feed_dict=feed_dict_test)
+          loss_train = sess.run(loss, feed_dict=feed_dict_train)
+          losstrain.append(loss_train)
+          losstest.append(loss_test)
+          if step % 100==0:
+              summary_str = sess.run(summary_op, feed_dict_test)
+              summary_str += sess.run(summary_op, feed_dict=feed_dict_train)
+              summary_writer.add_summary(summary_str, step)
+              print(loss_train)       
+      print(sess.run(loss, feed_dict=feed_dict_test))
+      print("ここからリッジレット解析を利用した場合")
+      for step in range(10):
+          sess.run(pretraining, feed_dict=feed_dict_oracle_train)
+      for step in range(1000):
+          sess.run(training_rid, feed_dict=feed_dict_oracle_train)
+          loss_test = sess.run(loss_oracle, feed_dict=feed_dict_oracle_test)
+          loss_train = sess.run(loss_oracle, feed_dict=feed_dict_oracle_train)
+          losstrain_oracle.append(loss_train)
+          losstest_oracle.append(loss_test)
+          if step % 100==0:
+              summary_str = sess.run(summary_op, feed_dict_oracle_test)
+              summary_str += sess.run(summary_op, feed_dict=feed_dict_oracle_train)
+              summary_writer.add_summary(summary_str, step)
+              print(loss_train)       
+      print(sess.run(loss_oracle, feed_dict=feed_dict_oracle_test))
+
+plt.plot(losstrain,label="normal_train")
+plt.plot(losstest,label="normal_test") 
+plt.plot(losstrain_oracle,label="oracle_train")
+plt.plot(losstest_oracle,label="oracle_test") 
+plt.legend()
+plt.title("loss")
+plt.xlabel("step")
+plt.ylabel("L^2-loss")
+plt.show()
+      
