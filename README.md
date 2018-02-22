@@ -1,4 +1,4 @@
-# Neural-Network
+# RidgeletCalculus for NeuralNetwork
 ## 実装について
 　ニューラルネットワークの初歩的な説明は割愛する。  
 　今回用いるのは、浅いニューラルネットワークと呼ばれるもので、3層パーセプトロンである。 
